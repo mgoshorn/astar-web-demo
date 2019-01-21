@@ -13,11 +13,11 @@ const defaultLayoutSettings = {
     sizeStyle: true,
     nodeHeight: 50,
     nodeWidth: 50,
-    nodeX: 60,
-    nodeY: 30,
+    nodeX: 120,
+    nodeY: 60,
     margin: 2,
-    originNode: [3, 15],
-    goalNode: [50, 15]
+    originNode: [3, 5],
+    goalNode: [115, 55]
 };
 
 const defaultColorSettings = {
@@ -80,12 +80,6 @@ const redrawView = function() {
     activeMap.drawSelf(context);
 }
 
-
-
-const getNodeUnderMouse = function(canvas, x, y) {
-
-}
-
 const appInitialization = function() {
     activeMap = initializeMap();
     activeMap.animateIn();
@@ -116,5 +110,9 @@ window.addEventListener('load', () => {
         if(!mouseActiveEvent) return;
         canvas.removeEventListener('mousemove', mouseActiveEvent);
     });
+
+    canvas.addEventListener('click', (e) => {
+        activeMap.processClick(e);
+    })
 });
 

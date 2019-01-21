@@ -18,6 +18,14 @@ class Node {
         return [this.map.offsetX(this.x), this.map.offsetY(this.y), this.map.settings.computed.nodeWidth, this.map.settings.computed.nodeHeight];
     }
 
+    isGoalNode() {
+        return this.map.goalNode === this;
+    }
+
+    isOriginNode() {
+        return this.map.originNode === this;
+    }
+
     /**
      * Draw self to the canvas with provided context
      * @param {} ctx 
@@ -36,9 +44,9 @@ class Node {
         let style;
         if (this.map.settings.animation.animating) {
             style = this.getAnimatingColor();
-        } else if (this.isStartingNode) {
+        } else if (this.isOriginNode()) {
             style = new Color(20, 255, 20);
-        } else if (this.isGoalNode) {
+        } else if (this.isGoalNode()) {
             style = new Color(255, 20, 20);
         } else {
             style = this.map.settings.color.untracked.copy();

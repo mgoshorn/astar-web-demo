@@ -1,8 +1,16 @@
+const ClickMode = Object.freeze({
+    DEFAULT: 0,
+    PLACE_ORIGIN: 1,
+    PLACE_GOAL: 2,
+})
+
 class AstarMap {
     constructor(settings, originNode, goalNode, nodes) {
         this.settings = settings;
-        this.originNode = originNode;
-        this.goalNode = goalNode;
+        this.originNode;
+        this.goalNode;
+        this.originNodeCoords = originNode;
+        this.goalNodeCoords = goalNode;
         this.nodes = nodes;
         this.computed = {};
         this.offsetX;
@@ -64,6 +72,10 @@ class AstarMap {
                 this.nodes[x][y] = node;
             }
         }
+        console.log(this.goalNodeCoords);
+        console.log(this.originNodeCoords);
+        this.goalNode = this.nodes[this.goalNodeCoords[0]][this.goalNodeCoords[1]];
+        this.originNode = this.nodes[this.originNodeCoords[0]][this.originNodeCoords[1]];
     }
 
     /**
@@ -123,6 +135,9 @@ class AstarMap {
         if (nodeRelativeX < this.settings.computed.margin || 
             nodeRelativeY < this.settings.computed.margin) return;
 
+        if (nodeRelativeX > this.settings.computed.margin + this.settings.computed.nodeWidth) return;
+        if (nodeRelativeY > this.settings.computed.margin + this.settings.computed.nodeHeight) return;
+
         const x = Math.floor((mouseX - this.settings.computed.outerMarginX/2) / 
                     (this.settings.computed.margin + this.settings.computed.nodeWidth));
 
@@ -130,10 +145,67 @@ class AstarMap {
                     (this.settings.computed.margin + this.settings.computed.nodeHeight));
         
         // Fail if mouse is beyond the range of displayed nodes
-        if (x > this.nodes.length) return;
-        if (y > this.nodes[0].length) return;
-        if (!x || !y) return;
+        if (x >= this.nodes.length) return;
+        if (y >= this.nodes[0].length) return;
+        if (x === undefined || y === undefined || isNaN(x) || isNaN(y)) return;
 
-        return this.nodes[x][y];
+        try {
+            return this.nodes[x][y];
+        } catch (e) {
+            console.log(x, y);
+        }
+    }
+
+    processClick(e) {
+        this.mouse = [e.clientX, e.clientY];
+        console.log(this.mouse);
+        const node = this.getNodeUnderMouse();
+        console.log(node);
+
+        // Swap goal with origin
+        if (this.clickMode === ClickMode.PLACE_GOAL && node === this.originNode) {
+            console.log('swap goal with origin');
+            this.goalNode = this.originNode;
+            this.originNode = undefined;
+            this.clickMode = ClickMode.PLACE_ORIGIN;
+            return;
+        }
+
+        // Swap origin with goal
+        if (this.clickMode === ClickMode.PLACE_ORIGIN && node === this.goalNode) {
+            this.originNode = this.goalNode;
+            this.goalNode = undefined;
+            this.clickMode = ClickMode.PLACE_GOAL;
+            return;
+        }
+
+        // Place goal
+        if (this.clickMode === ClickMode.PLACE_GOAL) {
+            this.goalNode = node;
+            this.clickMode = ClickMode.DEFAULT;
+            return;
+        }
+
+        // Place origin
+        if (this.clickMode === ClickMode.PLACE_ORIGIN) {
+            this.originNode = node;
+            this.clickMode = ClickMode.DEFAULT;
+            return;
+        }
+
+
+        // Pickup goal
+        if (node === this.goalNode) {
+            this.goalNode = undefined;
+            this.clickMode = ClickMode.PLACE_GOAL;
+        }
+
+        // Pickup origin
+        if (node === this.originNode) {
+            this.originNode = undefined;
+            this.clickMode = ClickMode.PLACE_ORIGIN;
+        }
+
+        
     }
 }
