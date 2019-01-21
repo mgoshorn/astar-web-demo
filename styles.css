@@ -1,0 +1,68 @@
+html {
+    background: #224;
+    color: #ACC;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+h1 {
+    text-align: center;
+}
+
+#astar-runtime-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+#astar-runtime-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    flex-grow: 0;
+    margin-bottom: 1rem;
+}
+
+#astar-runtime-controls > button {
+    margin: 0.5rem;
+    min-width: 1.5rem;
+    cursor: pointer;
+    border-width: 3px;
+    font-size: 1.5rem;
+}
+
+#astar-runtime-controls > button.selected {
+    background: teal;
+    border-color: teal;
+    box-shadow: 0 0 25px 0 #006060;
+    border-style: inset;
+}
+
+#canvas-container {
+    flex-grow: 1;
+    min-height: 100px;
+    min-width: 100px;
+}
+
+#astar-config {
+    background-image: url("./cog.png");
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#astar-canvas {
+    background: black;
+}
