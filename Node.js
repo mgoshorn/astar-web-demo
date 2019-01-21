@@ -48,8 +48,10 @@ class Node {
             style = new Color(20, 255, 20);
         } else if (this.isGoalNode()) {
             style = new Color(255, 20, 20);
-        } else {
+        } else if (this.navigable) {
             style = this.map.settings.color.untracked.copy();
+        } else {
+            style = new Color(0,0,0,0);
         }
         
         if (options.underMouse) {

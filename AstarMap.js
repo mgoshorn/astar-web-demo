@@ -2,7 +2,7 @@ const ClickMode = Object.freeze({
     DEFAULT: 0,
     PLACE_ORIGIN: 1,
     PLACE_GOAL: 2,
-})
+});
 
 class AstarMap {
     constructor(settings, originNode, goalNode, nodes) {
@@ -20,6 +20,23 @@ class AstarMap {
         this.mouse = [];
         this.canvas;
         this.mouseNode = { draw: () => {}};
+        this.doClickAction = (n) => {
+            n.navigable = !n.navigable;
+        }
+        this.mouseDownAction = this.setNodeUnnavigable;
+    }
+
+    process(context) {
+        this.update();
+        this.drawSelf(context);
+    }
+
+    update() {
+        if (this.mouseDown) {
+            const node = this.getNodeUnderMouse();
+            if (!node) return;
+            this.mouseDownAction(node);
+        }
     }
 
     /**
@@ -72,8 +89,6 @@ class AstarMap {
                 this.nodes[x][y] = node;
             }
         }
-        console.log(this.goalNodeCoords);
-        console.log(this.originNodeCoords);
         this.goalNode = this.nodes[this.goalNodeCoords[0]][this.goalNodeCoords[1]];
         this.originNode = this.nodes[this.originNodeCoords[0]][this.originNodeCoords[1]];
     }
@@ -91,6 +106,7 @@ class AstarMap {
      * @param {*} ctx - Canvas context
      */
     drawSelf(ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         // Set timestamp for current redraw
         this.redrawTime = new Date();
 
@@ -123,7 +139,10 @@ class AstarMap {
     }
 
     getNodeUnderMouse() {
-        let [mouseX, mouseY] = this.getMouseCoords();
+        // Deconstruct mouse coords
+        const [mouseX, mouseY] = this.getMouseCoords();
+
+        // Find coords relative to the node they are within
         const nodeRelativeX = (mouseX - this.settings.computed.outerMarginX/2) % 
                     (this.settings.computed.margin + this.settings.computed.nodeWidth);
 
@@ -138,6 +157,7 @@ class AstarMap {
         if (nodeRelativeX > this.settings.computed.margin + this.settings.computed.nodeWidth) return;
         if (nodeRelativeY > this.settings.computed.margin + this.settings.computed.nodeHeight) return;
 
+        // Compute Node indices
         const x = Math.floor((mouseX - this.settings.computed.outerMarginX/2) / 
                     (this.settings.computed.margin + this.settings.computed.nodeWidth));
 
@@ -149,19 +169,16 @@ class AstarMap {
         if (y >= this.nodes[0].length) return;
         if (x === undefined || y === undefined || isNaN(x) || isNaN(y)) return;
 
-        try {
-            return this.nodes[x][y];
-        } catch (e) {
-            console.log(x, y);
-        }
+        return this.nodes[x][y];
     }
 
     processClick(e) {
         this.mouse = [e.clientX, e.clientY];
-        console.log(this.mouse);
         const node = this.getNodeUnderMouse();
-        console.log(node);
 
+        // Do nothing if there is no node to process
+        if (!node) return;
+        
         // Swap goal with origin
         if (this.clickMode === ClickMode.PLACE_GOAL && node === this.originNode) {
             console.log('swap goal with origin');
@@ -193,19 +210,33 @@ class AstarMap {
             return;
         }
 
-
         // Pickup goal
         if (node === this.goalNode) {
             this.goalNode = undefined;
             this.clickMode = ClickMode.PLACE_GOAL;
+            return;
         }
 
         // Pickup origin
         if (node === this.originNode) {
             this.originNode = undefined;
             this.clickMode = ClickMode.PLACE_ORIGIN;
+            return;
         }
 
-        
+        this.doClickAction(node);
+    }
+
+    setNodeUnnavigable(node) {
+        // Cannot set goal or origin node to unnavigable
+        if (node === this.originNode || node === this.goalNode) {
+            return;
+        }
+
+        node.navigable = false;
+    }
+
+    setNodeNavigable(node) {
+        node.navigable = true;
     }
 }

@@ -66,3 +66,7 @@ h1 {
 #astar-canvas {
     background: black;
 }
+
+#astar-canvas {
+    cursor: pointer;
+}

@@ -68,15 +68,7 @@ const findNode = function(x, y) {
 
 }
 
-
-
-/** Less efficient than the loops version, but more fun! */
-const redrawViewFlatmap = function() {
-    nodes.flatMap(x => x).forEach(n => n.draw(context));
-}
-
 const redrawView = function() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
     activeMap.drawSelf(context);
 }
 
@@ -85,7 +77,7 @@ const appInitialization = function() {
     activeMap.animateIn();
 
     // Start drawing interval
-    activeMap.drawInterval = setInterval(() => redrawView(), 50);
+    activeMap.drawInterval = setInterval(() => activeMap.process(context), 50);
 }
 
 window.addEventListener('load', () => {
@@ -105,14 +97,18 @@ window.addEventListener('load', () => {
             activeMap.mouse = [e.clientX, e.clientY];
         })
     });
+
+    canvas.addEventListener('mousedown', (e) => {
+        activeMap.mouseDown = true;
+    });
+
+    canvas.addEventListener('mouseup', (e) => {
+        activeMap.mouseDown = false;
+    });
     
     canvas.addEventListener('mouseleave', (e) => {
         if(!mouseActiveEvent) return;
         canvas.removeEventListener('mousemove', mouseActiveEvent);
     });
-
-    canvas.addEventListener('click', (e) => {
-        activeMap.processClick(e);
-    })
 });
 
