@@ -41,7 +41,7 @@ const initializeMap = function() {
     const map =  new AstarMap(settings, defaultLayoutSettings.originNode, defaultLayoutSettings.goalNode, nodes);
 
     console.log(map);
-
+    map.astar = new Astar(map);
     if (map.settings.layout.sizeStyle) {
         map.initializeWithExplicitNodes();
     } else {

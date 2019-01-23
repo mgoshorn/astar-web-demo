@@ -24,6 +24,7 @@ class AstarMap {
             n.navigable = !n.navigable;
         }
         this.mouseDownAction = this.setNodeUnnavigable;
+        this.astar;
     }
 
     process(context) {
