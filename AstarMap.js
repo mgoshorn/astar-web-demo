@@ -25,6 +25,7 @@ class AstarMap {
         }
         this.mouseDownAction = this.setNodeUnnavigable;
         this.astar;
+        this.clickMode = ClickMode.DEFAULT;
     }
 
     process(context) {
@@ -36,7 +37,9 @@ class AstarMap {
         if (this.mouseDown) {
             const node = this.getNodeUnderMouse();
             if (!node) return;
-            this.mouseDownAction(node);
+            if(this.clickMode === ClickMode.DEFAULT) {
+                this.mouseDownAction(node);
+            }
         }
     }
 
