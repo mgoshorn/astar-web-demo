@@ -99,6 +99,7 @@ window.addEventListener('load', () => {
     });
 
     canvas.addEventListener('mousedown', (e) => {
+        activeMap.processClick(e);
         activeMap.mouseDown = true;
     });
 
