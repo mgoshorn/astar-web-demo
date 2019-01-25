@@ -12,7 +12,7 @@ class Astar {
 
     next() {
         if (!this.started) {
-
+            this.doFirstProcess();
         }
     }
 
@@ -23,12 +23,33 @@ class Astar {
         };
         this.heap = new BinaryHeap(customCompare);
 
-        initialNodes = this.findNeighbors(this.map.originNode);
-        
+        const initialNodes = this.findNeighbors(this.map.originNode);
+        initialNodes
+            .filter((n) => this.processNode(n, 0))
+            .forEach((n) => this.heap.push(n));   
     }
 
     isNewNode(node) {
         return !this.travelCost.has(node);
+    }
+
+    /**
+     * Processes Node given current source Node.
+     * Checks if this Node is tracked, and if so if the
+     * the current path is more efficient than existing track
+     * route. If so, updates travel costs and returns true, otherwise
+     * returns false.
+     * @param {} node 
+     * @param {*} travelCost 
+     */
+    processNode(node, travelCost) {
+        if(this.travelCost.has(node) && this.travelCost.get(node) <= travelCost + node.weight) {
+            return false;
+        }
+        this.travelCost.set(node, travelCost + node.weight);
+        const estimateRemaining = this.heuristicFunction(node, this.map.goalNode);
+        this.estimateRemainingCost.set(node, estimateRemaining);
+        return true;
     }
 
     findNeighbors(node) {

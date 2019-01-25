@@ -89,7 +89,7 @@ class AstarMap {
         for (let x = 0; x < this.settings.computed.nodeX; x++) {
             this.nodes[x] = [];
             for (let y = 0; y < this.settings.computed.nodeY; y++) {
-                const node = new Node(x, y, 1, true, this);
+                const node = new AstarNode(x, y, 1, true, this);
                 this.nodes[x][y] = node;
             }
         }

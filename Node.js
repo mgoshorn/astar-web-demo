@@ -1,7 +1,7 @@
 /**
  * Describes a singular Node in an A* graph
  */
-class Node {
+class AstarNode {
     constructor(x, y, weight, navigable, map) {
         this.x = x;
         this.y = y;
