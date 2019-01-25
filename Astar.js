@@ -7,6 +7,7 @@ class Astar {
         this.estimateRemainingCost = new Map();
         this.queuedNodes = [];
         this.started = false;
+        this.heap;
     }
 
     next() {
@@ -16,8 +17,14 @@ class Astar {
     }
 
     doFirstProcess() {
+        const customCompare = (n1, n2) => {
+            (this.travelCost.get(n1) + this.estimateRemainingCost.get(n1)) -
+            (this.travelCost.get(n2) + this.estimateRemainingCost.get(n2))
+        };
+        this.heap = new BinaryHeap(customCompare);
+
         initialNodes = this.findNeighbors(this.map.originNode);
-        // forEach
+        
     }
 
     isNewNode(node) {
