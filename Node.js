@@ -48,6 +48,8 @@ class AstarNode {
             style = new Color(20, 255, 20);
         } else if (this.isGoalNode()) {
             style = new Color(255, 20, 20);
+        } else if (this.map.astar.travelCost.has(this)) {
+            style = new Color(100, 100, 255);
         } else if (this.navigable) {
             style = this.map.settings.color.untracked.copy();
         } else {

@@ -111,5 +111,9 @@ window.addEventListener('load', () => {
         if(!mouseActiveEvent) return;
         canvas.removeEventListener('mousemove', mouseActiveEvent);
     });
+
+    document.getElementById('start-button').addEventListener('click', () => {
+        activeMap.astar.next();
+    });
 });
 

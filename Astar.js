@@ -13,20 +13,32 @@ class Astar {
     next() {
         if (!this.started) {
             this.doFirstProcess();
+        } else {
+            this.processMinNode();
         }
     }
 
+    processMinNode() {
+        const n = this.heap.extractMinimum().value;
+        const neighbors = this.findNeighbors(n);
+        neighbors
+            .filter((n) => this.processNode(n, 0))
+            .forEach((n) => this.heap.insert(this.travelCost.get(n) + this.estimateRemainingCost.get(n), n));   
+    }
+
+
     doFirstProcess() {
-        const customCompare = (n1, n2) => {
-            (this.travelCost.get(n1) + this.estimateRemainingCost.get(n1)) -
-            (this.travelCost.get(n2) + this.estimateRemainingCost.get(n2))
-        };
-        this.heap = new BinaryHeap(customCompare);
+        // const customCompare = (n1, n2) => {
+        //     (this.travelCost.get(n1) + this.estimateRemainingCost.get(n1)) -
+        //     (this.travelCost.get(n2) + this.estimateRemainingCost.get(n2))
+        // };
+        this.heap = new BinaryHeap();
 
         const initialNodes = this.findNeighbors(this.map.originNode);
         initialNodes
             .filter((n) => this.processNode(n, 0))
-            .forEach((n) => this.heap.push(n));   
+            .forEach((n) => this.heap.insert(this.travelCost.get(n) + this.estimateRemainingCost.get(n), n));   
+        this.started = true;
     }
 
     isNewNode(node) {
@@ -55,7 +67,7 @@ class Astar {
     findNeighbors(node) {
         const xRange = [node.x - 1, node.x, node.x + 1];
         const yRange = [node.y - 1, node.y, node.y + 1];
-        const nodeCoords = [
+        const nodes = [
             [xRange[0], yRange[0]],
             [xRange[0], yRange[1]],
             [xRange[0], yRange[2]],
@@ -68,11 +80,13 @@ class Astar {
             return c[0] >= 0 && c[1] >= 0 && 
                 c[0] < this.map.nodes.length &&
                 c[1] < this.map.nodes[0].length; 
-        });
-        const nodes = [];
-        nodeCoords.forEach( (c) => {
-            nodes.push(this.map.nodes[c[0]][c[1]]);
-        })
+        }).map(c => {
+            return this.map.nodes[c[0]][c[1]];
+        }).filter(n => n.navigable);
+        // const nodes = [];
+        // nodeCoords.forEach( (c) => {
+        //     nodes.push(this.map.nodes[c[0]][c[1]]);
+        // })
 
         console.log(nodes);
         return nodes;
