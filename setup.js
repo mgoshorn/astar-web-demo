@@ -6,6 +6,13 @@ let context;
 let map = new AstarMap();
 let activeMap = map;
 let animation = new AnimationSettings();
+let astarNextInterval;
+let astarNextIntervalDelay;
+const astarNextIntervalDelaySpeeds = {
+    slow: 1000,
+    medium: 250,
+    fast: 40
+};
 
 let mouseActiveEvent;
 
@@ -80,6 +87,17 @@ const appInitialization = function() {
     activeMap.drawInterval = setInterval(() => activeMap.process(context), 50);
 }
 
+const updateDisplayInterval = function() {
+    if (astarNextInterval) {
+        clearInterval(astarDisplayInterval)
+    }
+    if(astarNextIntervalDelay) {
+        astarNextInterval = setInterval(() => {
+            activeMap.astar.next();
+        }, astarNextIntervalDelay)
+    }
+}
+
 window.addEventListener('load', () => {
     container = document.getElementById('canvas-container');
     canvas = document.getElementById('astar-canvas');
@@ -115,5 +133,22 @@ window.addEventListener('load', () => {
     document.getElementById('start-button').addEventListener('click', () => {
         activeMap.astar.next();
     });
+
+    document.getElementById('speed-slow').addEventListener('click', () => {
+        astarNextIntervalDelay = astarNextIntervalDelaySpeeds.slow;
+        updateDisplayInterval();
+    });
+
+    document.getElementById('speed-medium').addEventListener('click', () => {
+        astarNextIntervalDelay = astarNextIntervalDelaySpeeds.medium;
+        updateDisplayInterval();
+    });
+
+    document.getElementById('speed-fast').addEventListener('click', () => {
+        astarNextIntervalDelay = astarNextIntervalDelaySpeeds.fast;
+        updateDisplayInterval();
+    });
+
+
 });
 
