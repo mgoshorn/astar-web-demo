@@ -8,37 +8,64 @@ class Astar {
         this.queuedNodes = [];
         this.started = false;
         this.heap;
+        this.edgeMap = new Map();
+        this.complete = false;
+        this.impossible = false;
+        this.solution = [];
     }
 
     next() {
         if (!this.started) {
             this.doFirstProcess();
+        } if (this.impossible) {
+
+        } if (this.complete) {
+            if (!this.solution.length && this.edgeMap.has(this.map.goalNode)) {
+                this.findSolutionPath();
+            }
+
         } else {
             this.processMinNode();
         }
     }
 
+    findSolutionPath() {
+        let currentNode = this.map.goalNode;
+        this.solution.push(currentNode);
+        while (currentNode !== this.map.originNode) {
+            if (!currentNode) return;
+            currentNode = this.edgeMap.get(currentNode);
+            this.solution.push(currentNode);
+        }
+    }
+
     processMinNode() {
+        // Check if heap has been emptied
+        if (this.heap.isEmpty()) {
+            // if heap is empty prior to the goal node being found, then there
+            // is no solution
+            this.impossible = true;
+            return;
+        }
         const n = this.heap.extractMinimum().value;
         const neighbors = this.findNeighbors(n);
         neighbors
-            .filter((n) => this.processNode(n, 0))
-            .forEach((n) => this.heap.insert(this.travelCost.get(n) + this.estimateRemainingCost.get(n), n));   
+            .filter((neighbor) => this.processNode(neighbor, this.travelCost.get(n) || 0))
+            .forEach((neighbor) => {
+                this.edgeMap.set(neighbor, n)
+                this.heap.insert(this.travelCost.get(neighbor) + this.estimateRemainingCost.get(neighbor), neighbor);
+            });
     }
 
 
     doFirstProcess() {
-        // const customCompare = (n1, n2) => {
-        //     (this.travelCost.get(n1) + this.estimateRemainingCost.get(n1)) -
-        //     (this.travelCost.get(n2) + this.estimateRemainingCost.get(n2))
-        // };
         this.heap = new BinaryHeap();
-
-        const initialNodes = this.findNeighbors(this.map.originNode);
-        initialNodes
-            .filter((n) => this.processNode(n, 0))
-            .forEach((n) => this.heap.insert(this.travelCost.get(n) + this.estimateRemainingCost.get(n), n));   
+        this.travelCost.set(this.map.originNode, 0);
+        const estimateRemaining = this.heuristicFunction(this.map.originNode, this.map.goalNode);
+        this.estimateRemainingCost.set(this.map.originNode, estimateRemaining);
         this.started = true;
+        this.heap.insert(estimateRemaining, this.map.originNode);
+
     }
 
     isNewNode(node) {
@@ -55,6 +82,10 @@ class Astar {
      * @param {*} travelCost 
      */
     processNode(node, travelCost) {
+        // If this node is the goal node, then we have found a solution
+        if (node === this.map.goalNode) {
+            this.complete = true;
+        }
         if(this.travelCost.has(node) && this.travelCost.get(node) <= travelCost + node.weight) {
             return false;
         }
@@ -77,18 +108,16 @@ class Astar {
             [xRange[2], yRange[1]],
             [xRange[2], yRange[2]],
         ].filter( c => {
+            // filter out out of range coords
             return c[0] >= 0 && c[1] >= 0 && 
                 c[0] < this.map.nodes.length &&
                 c[1] < this.map.nodes[0].length; 
         }).map(c => {
+            // map to actual Nodes
             return this.map.nodes[c[0]][c[1]];
+            // filter out impassable nodes
         }).filter(n => n.navigable);
-        // const nodes = [];
-        // nodeCoords.forEach( (c) => {
-        //     nodes.push(this.map.nodes[c[0]][c[1]]);
-        // })
 
-        console.log(nodes);
         return nodes;
     }
 }

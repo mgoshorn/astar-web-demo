@@ -89,7 +89,7 @@ const appInitialization = function() {
 
 const updateDisplayInterval = function() {
     if (astarNextInterval) {
-        clearInterval(astarDisplayInterval)
+        clearInterval(astarNextInterval)
     }
     if(astarNextIntervalDelay) {
         astarNextInterval = setInterval(() => {

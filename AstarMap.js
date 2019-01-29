@@ -135,6 +135,14 @@ class AstarMap {
         }
 
         this.mouseNode.draw(ctx, {underMouse: true});
+
+        if (this.astar.complete) {
+            const solution = this.astar.solution;
+            for (let i = 0; i < solution.length-1; i++) {
+                const [from, to] = [ solution[i], solution[i+1]];
+                from.drawEdge(ctx, to);
+            }
+        }
     }
 
     getMouseCoords() {

@@ -37,6 +37,11 @@ class AstarNode {
         ctx.fillRect(...this.getRectangle());
     }
 
+    drawEdge(ctx, to) {
+        ctx.fillStyle = new Color(0, 255, 255).getColor();
+        ctx.fillRect(...this.getRectangle());
+    }
+
     /**
      * Generate fill Color from Node state
      */
