@@ -47,7 +47,6 @@ const initializeMap = function() {
     const settings = new Settings(layoutSettings, animationSettings, colorSettings);
     const map =  new AstarMap(settings, defaultLayoutSettings.originNode, defaultLayoutSettings.goalNode, nodes);
 
-    console.log(map);
     map.astar = new Astar(map, Heuristics.MANHATTAN);
     if (map.settings.layout.sizeStyle) {
         map.initializeWithExplicitNodes();
@@ -113,7 +112,8 @@ window.addEventListener('load', () => {
 
         canvas.addEventListener('mousemove', (e) => {
             activeMap.mouse = [e.clientX, e.clientY];
-        })
+            activeMap.mouse.drawMouseDown(context);
+        });
     });
 
     canvas.addEventListener('mousedown', (e) => {

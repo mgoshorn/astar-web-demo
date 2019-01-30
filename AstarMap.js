@@ -19,7 +19,7 @@ class AstarMap {
         this.redrawTime;
         this.mouse = [];
         this.canvas;
-        this.mouseNode = { draw: () => {}};
+        this.mouseNode;
         this.doClickAction = (n) => {
             n.navigable = !n.navigable;
         }
@@ -31,6 +31,15 @@ class AstarMap {
     process(context) {
         this.update();
         this.drawSelf(context);
+    }
+
+    drawMouseDown(context) {
+        const node = this.getNodeUnderMouse();
+        if(!node || node === this.mouseNode) return;
+
+        this.mouseDown.draw(context);
+        this.mouseDown = node;
+        this.mouseDown.draw(context, {underMouse: true});
     }
 
     update() {
@@ -128,7 +137,7 @@ class AstarMap {
                 this.nodes[x][y].draw(ctx);
             }
         }
-        // console.log(this.canvas);
+
         const mouseNode = this.getNodeUnderMouse();
         if (mouseNode) {
             this.mouseNode = mouseNode;
