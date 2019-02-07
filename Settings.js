@@ -2,7 +2,7 @@
  * Settings related to Animation
  */
 class AnimationSettings {
-    constructor(animating = false, duration = 1500, startTime) {
+    constructor(animating = false, duration = 500, startTime) {
         this.animating = animating;
         this.duration = duration;
         this.startTime = startTime;
