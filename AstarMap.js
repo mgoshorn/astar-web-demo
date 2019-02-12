@@ -199,6 +199,12 @@ class AstarMap {
 
         // Do nothing if there is no node to process
         if (!node) return;
+
+        if (this.astar.travelCost.has(node)) {
+            console.log(`Node: [${node.x}, ${node.y}]`, `Cost: ${this.astar.travelCost.get(node)}`, 
+                `estimate remaining: ${this.astar.estimateRemainingCost.get(node)}`, 
+                `total: ${this.astar.travelCost.get(node) + this.astar.estimateRemainingCost.get(node)}`);
+        }
         
         // Swap goal with origin
         if (this.clickMode === ClickMode.PLACE_GOAL && node === this.originNode) {

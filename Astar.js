@@ -50,13 +50,17 @@ class Astar {
         const n = this.heap.extractMinimum().value;
         const neighbors = this.findNeighbors(n);
         neighbors
-            .filter((neighbor) => this.processNode(neighbor, this.travelCost.get(n) || 0))
+            .filter((neighbor) => this.processNode(neighbor, this.travelCost.get(n) || 0, this.isDiagonal(n, neighbor)))
             .forEach((neighbor) => {
                 this.edgeMap.set(neighbor, n)
                 this.heap.insert(this.travelCost.get(neighbor) + this.estimateRemainingCost.get(neighbor), neighbor);
             });
     }
 
+
+    isDiagonal(n, o) {
+        return n.x !== o.x && n.y !== o.y;
+    }
 
     doFirstProcess() {
         this.heap = new BinaryHeap();
@@ -81,15 +85,19 @@ class Astar {
      * @param {} node 
      * @param {*} travelCost 
      */
-    processNode(node, travelCost) {
+    processNode(node, travelCost, isDiagonal) {
         // If this node is the goal node, then we have found a solution
         if (node === this.map.goalNode) {
             this.complete = true;
         }
-        if(this.travelCost.has(node) && this.travelCost.get(node) <= travelCost + node.weight) {
+
+        const cost = isDiagonal ? node.weight * 1.1 : node.weight;
+
+        if(this.travelCost.has(node) && this.travelCost.get(node) <= travelCost + cost) {
             return false;
         }
-        this.travelCost.set(node, travelCost + node.weight);
+        
+        this.travelCost.set(node, travelCost + cost);
         const estimateRemaining = this.heuristicFunction(node, this.map.goalNode);
         this.estimateRemainingCost.set(node, estimateRemaining);
         return true;

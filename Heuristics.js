@@ -6,7 +6,7 @@ const Heuristics = Object.freeze({
     },
     MANHATTAN: (n1, n2) => {
         const diagonalPenalty = n1.x !== n2.x && n1.y !== n2.y ? 1.1 : 1;
-        return (Math.abs(n1.x - n2.x) + Math.abs(n1.y - n2.y));
+        return (Math.abs(n1.x - n2.x) + Math.abs(n1.y - n2.y) * diagonalPenalty);
     },
     EUCLIDEAN: (n1, n2) => {
         const x = Math.abs(n1.x - n2.x);
